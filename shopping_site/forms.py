@@ -1,12 +1,11 @@
+from django import forms
 
-class CreateProductForm(forms.ModelForm):
-	name  = models.CharField(max_length=200)
-	price = models.DecimalField(max_digits=10, decimal_places=2)
-	#Sbody1 = models.CharField(max_length=2000)
+class CreateProductForm(forms.Form):
+	name  = forms.CharField(max_length=200)
+	price = forms.DecimalField(max_digits=10, decimal_places=2)
 	
-	description = models.CharField(max_length=500)
-	stock = models.PositiveInteger()
+	description = forms.CharField(max_length=500)
+	stock=forms.IntegerField()
+	# available=forms.BooleanField(widget=forms.CheckboxInput(),initial=False)
+	category=forms.CharField()
 	
-	class Meta:
-		model = BlogList
-		fields = ['name','price', 'description','stock',]

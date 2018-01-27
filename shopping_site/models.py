@@ -4,8 +4,10 @@ from django.db import models
 class Product(models.Model):
 	name  = models.CharField(max_length=200)
 	price = models.DecimalField(max_digits=10, decimal_places=2)
-	#Sbody1 = models.CharField(max_length=2000)
 	pub_date = models.DateTimeField(auto_now_add=True)
-	#user = models.ForeignKey(User,on_delete=models.DO_NOTHING)
+	description= models.TextField(default="")
+	stock=models.IntegerField(default=0)
+	available=models.NullBooleanField(default=False)
+	catagory=models.CharField(max_length=200,default='')
 	def __str__(self):
 		return self.name
