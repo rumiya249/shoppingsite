@@ -1,0 +1,18 @@
+{% for i in prod %}
+<p>
+	<ul>
+<li>Name:{{i.name}}</li>
+<li>Price:{{i.price}}</li>
+<li>Description:{{i.description}}
+</li>
+<li>Stock:{{i.stock}}</li>
+<li>Availability:{{i.available}}</li>
+</ul>
+<form action="{% url 'delete_product' i.id%}" method='POST'>
+	{%csrf_token%}
+<input type="submit" name="delete" value="Delete">
+<input type="hidden" name="dele_id" value="{{i.id}}">
+	</form>
+<a href="{%url 'edit_product' i.id%}" class="btn" >Edit</a>
+</p>
+{% endfor %}
