@@ -11,3 +11,7 @@ class Product(models.Model):
 	catagory=models.CharField(max_length=200,default='')
 	def __str__(self):
 		return self.name
+
+class FileDataModel(models.Model):
+    created_date=models.DateTimeField(auto_now=True)
+    path=models.FileField(upload_to='data_files/csv')

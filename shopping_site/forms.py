@@ -8,4 +8,16 @@ class CreateProductForm(forms.Form):
 	stock=forms.IntegerField()
 	# available=forms.BooleanField(widget=forms.CheckboxInput(),initial=False)
 	category=forms.CharField()
+
+class BulkUploadForm(forms.Form):
+	file_name= forms.FileField()
+
+
+
+class SheetAPIForm(forms.Form):
+	"""docstring for SheetAPIForm"""
+
+	sheet_id=forms.CharField(max_length=200)
+	
+		
 	
