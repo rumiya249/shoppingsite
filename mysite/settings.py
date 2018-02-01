@@ -81,7 +81,7 @@ DATABASES = {
         #     'read_default_file': 'my.cnf',
         # },
         #'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-        'NAME':'shop_db',
+        'NAME':'shop_db2',
         'USER':'root',
         'PASSWORD':'root',
         # 'ENGINE': 'django.db.backends.sqlite3',

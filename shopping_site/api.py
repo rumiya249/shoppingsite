@@ -4,13 +4,14 @@ from .models import Product,FileDataModel
 
 class ProductApi():
 
-	def create(self,name,price,description,stock,category):
+	def create(self,name,price,description,stock,category,productID):
 		prod=Product()
 		prod.name=name
 		prod.price=price
 		prod.description=description
 		prod.stock=stock
 		prod.catagory=category
+		prod.productID=productID
 		prod.save()
 
 		return prod

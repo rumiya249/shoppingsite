@@ -9,9 +9,20 @@ class Product(models.Model):
 	stock=models.IntegerField(default=0)
 	available=models.NullBooleanField(default=False)
 	catagory=models.CharField(max_length=200,default='')
+	productID=models.CharField(max_length=220)
+	Barcode_Path=models.ImageField(upload_to='data_files/svg', null=True, blank=True)
+
 	def __str__(self):
 		return self.name
 
 class FileDataModel(models.Model):
     created_date=models.DateTimeField(auto_now=True)
     path=models.FileField(upload_to='data_files/csv')
+    test_fields=models.IntegerField(default=0)
+
+
+    
+
+
+
+
