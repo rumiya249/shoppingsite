@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.urls import path,include
-from .views import AddProductView,DisplayProducts,DeleteProducts,EditProductView,DownloadDataView,BulkUpload,GoogleSheetUpload,GenerateBarCodeView
+from .views import AddProductView,DisplayProducts,DeleteProducts,EditProductView,DownloadDataView,BulkUpload,GoogleSheetUpload,GenerateBarCodeView,UploadBarcode,SignupView,LoginView
 
 urlpatterns = [
 	path('',DisplayProducts.as_view(),name='display_products'),
@@ -11,5 +11,9 @@ urlpatterns = [
 	path('upload/',BulkUpload.as_view(),name='upload_data'),
 	path('sheet_upload/',GoogleSheetUpload.as_view(),name='sheet_upload'),
 	path('barcode/<int:product_id>',GenerateBarCodeView.as_view(),name='generate_product'),
+	path('barcode_upload/',UploadBarcode.as_view(),name='barcode'),
+	path('signup/',SignupView.as_view(),name='signup'),
+	path('login/',LoginView.as_view(),name='login'),
+
 
 ]
