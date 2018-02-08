@@ -9,6 +9,7 @@ from django.views.generic import TemplateView,FormView,View
 from .forms import CreateProductForm,BulkUploadForm,SheetAPIForm,BarcodeUploadForm,SignupForm,LoginForm
 from .models import Product,FileDataModel,ImageDataModel,UserProfileModel
 import csv
+import json
 from .api import ProductApi
 
 
@@ -306,7 +307,7 @@ class LoginView(FormView):
 		usr_obj = UserProfileModel.objects.get(email=email)
 		if usr_obj:
 			login(usr_obj,request)
-			
+
 
 
 			
@@ -326,6 +327,72 @@ class LoginView(FormView):
     	# with open(filePath, 'wb+') as destination:
      #    	for chunk in file.chunks():
      #    	    destination.write(chunk)
+
+class ProductES(View):
+    def get(self,request,*args,**kwargs):
+        # print (request.GET)
+        product_obj=Product.objects.all()
+        with open('test.json','w') as f:
+	        prod_dictionary={}
+	        lis_data=[]
+	        for i in product_obj:
+	            new_dictionary={}
+	            new_dictionary["name"]=i.name
+	            new_dictionary['price']=int(i.price)
+	            # new_dictionary['pub_date']=i.pub_date
+	            new_dictionary['description']=i.description
+	            new_dictionary['stock']=i.stock
+	            new_dictionary['available']=i.available
+	            new_dictionary['catagory']=i.catagory
+	            new_dictionary['productID']=i.productID
+	            # new_dictionary['Barcode_Path']=i.Barcode_Path
+	            new_dictionary['barode_id']=i.barode_id
+	            f.write('{"index":{"_id":%s}}'%i.id)
+	            f.write('\n')
+	            f.write(json.dumps(new_dictionary))
+	            f.write('\n')
+	            lis_data.append(new_dictionary)
+        	prod_dictionary={'data':lis_data}
+        	s=json.dumps(prod_dictionary)
+        return HttpResponse(s)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

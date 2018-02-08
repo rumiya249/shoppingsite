@@ -37,8 +37,10 @@ class ImageDataModel(models.Model):
 class UserProfileModel(User):
 	user_types = models.CharField(max_length=32,choices=choices)
 
-
 	
+
+
+
 
 
 
