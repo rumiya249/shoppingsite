@@ -28,6 +28,22 @@ class Product(models.Model):
 class FileDataModel(models.Model):
     created_date=models.DateTimeField(auto_now=True)
     path=models.FileField(upload_to='data_files/csv')
+
+
+class FacebookData(models.Model):
+	status = models.CharField(max_length=500)
+	comment = models.CharField(max_length=500)
+	comment_from = models.CharField(max_length=500)
+	number_of_likes = models.IntegerField(default=0)
+
+class TwitterData(models.Model):
+	id_message = models.BigIntegerField(default=0,null=True)
+	message = models.CharField(max_length=200,null=True)
+	number_of_likes = models.IntegerField(default=0,null=True)
+	posted_by_user = models.CharField(max_length=30,null=True)
+	replied_to_user = models.CharField(max_length=30,null=True)
+	replied_to_message_id = models.CharField(max_length=200,null=True)
+
     test_fields=models.IntegerField(default=0)
 
 class ImageDataModel(models.Model):
@@ -62,3 +78,4 @@ class UserProfileModel(User):
 
 
 
+>>>>>>> bc65a24b008b8b8463de5502abfcdf87bb321000

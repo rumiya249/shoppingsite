@@ -1,4 +1,7 @@
+<<<<<<< HEAD
+=======
 
+>>>>>>> bc65a24b008b8b8463de5502abfcdf87bb321000
 from __future__ import print_function
 import httplib2
 import os
@@ -63,6 +66,13 @@ def main():
     service = discovery.build('sheets', 'v4', http=http,
                               discoveryServiceUrl=discoveryUrl)
 
+<<<<<<< HEAD
+    spreadsheetId = '1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms'
+    rangeName = 'Class Data!A2:E'
+    result = service.spreadsheets().values().get(
+        spreadsheetId=spreadsheetId, range=rangeName).execute()
+    values = result.get('values', [])
+=======
     spreadsheetId = '1p-iS2LP_ToTfvqlbIadFrkakKDOsaOf_69fWJpN-Js0'
     rangeName = 'Sheet1!A1:E9'
     result = service.spreadsheets().values().get(
@@ -70,6 +80,7 @@ def main():
     print(result,"dskfhlksdjfklsdjlkfjskldjfklsdjf")
     values = result.get('values', [])
     print(values,"values")
+>>>>>>> bc65a24b008b8b8463de5502abfcdf87bb321000
 
     if not values:
         print('No data found.')
@@ -77,8 +88,16 @@ def main():
         print('Name, Major:')
         for row in values:
             # Print columns A and E, which correspond to indices 0 and 4.
+<<<<<<< HEAD
+            print('%s, %s' % (row[0], row[4]))
+
+
+if __name__ == '__main__':
+    main()
+=======
             print('%s, %s ,%s, %s,%s' % (row[0], row[1],row[2],row[3],row[4]))
 
 
 if __name__ == '__main__':
     main()
+>>>>>>> bc65a24b008b8b8463de5502abfcdf87bb321000
