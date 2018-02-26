@@ -1,0 +1,62 @@
+{"index":{"_id":66}}
+{"name": "product1", "stock": 5, "barode_id": "100027", "productID": "000010002", "catagory": "googd_product1", "available": false, "description": "test_product1", "price": 35}
+{"index":{"_id":67}}
+{"name": "product2", "stock": 6, "barode_id": "100036", "productID": "000010003", "catagory": "googd_product2", "available": false, "description": "test_product2", "price": 36}
+{"index":{"_id":68}}
+{"name": "product3", "stock": 7, "barode_id": "100045", "productID": "000010004", "catagory": "googd_product3", "available": false, "description": "test_product3", "price": 37}
+{"index":{"_id":69}}
+{"name": "product4", "stock": 8, "barode_id": "100054", "productID": "000010005", "catagory": "googd_product4", "available": false, "description": "test_product4", "price": 38}
+{"index":{"_id":70}}
+{"name": "product5", "stock": 9, "barode_id": "100063", "productID": "000010006", "catagory": "googd_product5", "available": false, "description": "test_product5", "price": 39}
+{"index":{"_id":71}}
+{"name": "product6", "stock": 10, "barode_id": "100072", "productID": "000010007", "catagory": "googd_product6", "available": false, "description": "test_product6", "price": 40}
+{"index":{"_id":72}}
+{"name": "product7", "stock": 11, "barode_id": "100081", "productID": "000010008", "catagory": "googd_product7", "available": false, "description": "test_product7", "price": 41}
+{"index":{"_id":73}}
+{"name": "product8", "stock": 12, "barode_id": "100090", "productID": "000010009", "catagory": "googd_product8", "available": false, "description": "test_product8", "price": 42}
+{"index":{"_id":74}}
+{"name": "product9", "stock": 13, "barode_id": "100106", "productID": "000010010", "catagory": "googd_product9", "available": false, "description": "test_product9", "price": 43}
+{"index":{"_id":75}}
+{"name": "product10", "stock": 14, "barode_id": "0", "productID": "000010011", "catagory": "googd_product10", "available": false, "description": "test_product10", "price": 44}
+{"index":{"_id":76}}
+{"name": "product11", "stock": 15, "barode_id": "0", "productID": "000010012", "catagory": "googd_product11", "available": false, "description": "test_product11", "price": 45}
+{"index":{"_id":77}}
+{"name": "product12", "stock": 16, "barode_id": "0", "productID": "000010013", "catagory": "googd_product12", "available": false, "description": "test_product12", "price": 46}
+{"index":{"_id":78}}
+{"name": "product13", "stock": 17, "barode_id": "0", "productID": "000010014", "catagory": "googd_product13", "available": false, "description": "test_product13", "price": 47}
+{"index":{"_id":79}}
+{"name": "product14", "stock": 18, "barode_id": "0", "productID": "000010015", "catagory": "googd_product14", "available": false, "description": "test_product14", "price": 48}
+{"index":{"_id":80}}
+{"name": "product15", "stock": 19, "barode_id": "0", "productID": "000010016", "catagory": "googd_product15", "available": false, "description": "test_product15", "price": 49}
+{"index":{"_id":81}}
+{"name": "product16", "stock": 20, "barode_id": "0", "productID": "000010017", "catagory": "googd_product16", "available": false, "description": "test_product16", "price": 50}
+{"index":{"_id":82}}
+{"name": "product17", "stock": 21, "barode_id": "0", "productID": "000010018", "catagory": "googd_product17", "available": false, "description": "test_product17", "price": 51}
+{"index":{"_id":83}}
+{"name": "product18", "stock": 22, "barode_id": "0", "productID": "000010019", "catagory": "googd_product18", "available": false, "description": "test_product18", "price": 52}
+{"index":{"_id":84}}
+{"name": "product19", "stock": 23, "barode_id": "0", "productID": "000010020", "catagory": "googd_product19", "available": false, "description": "test_product19", "price": 53}
+{"index":{"_id":85}}
+{"name": "product20", "stock": 24, "barode_id": "0", "productID": "000010021", "catagory": "googd_product20", "available": false, "description": "test_product20", "price": 54}
+{"index":{"_id":86}}
+{"name": "product21", "stock": 25, "barode_id": "0", "productID": "000010022", "catagory": "googd_product21", "available": false, "description": "test_product21", "price": 55}
+{"index":{"_id":87}}
+{"name": "product22", "stock": 26, "barode_id": "0", "productID": "000010023", "catagory": "googd_product22", "available": false, "description": "test_product22", "price": 56}
+{"index":{"_id":88}}
+{"name": "product23", "stock": 27, "barode_id": "0", "productID": "000010024", "catagory": "googd_product23", "available": false, "description": "test_product23", "price": 57}
+{"index":{"_id":89}}
+{"name": "product24", "stock": 28, "barode_id": "0", "productID": "000010025", "catagory": "googd_product24", "available": false, "description": "test_product24", "price": 58}
+{"index":{"_id":90}}
+{"name": "product25", "stock": 29, "barode_id": "0", "productID": "000010026", "catagory": "googd_product25", "available": false, "description": "test_product25", "price": 59}
+{"index":{"_id":91}}
+{"name": "product26", "stock": 30, "barode_id": "0", "productID": "000010027", "catagory": "googd_product26", "available": false, "description": "test_product26", "price": 60}
+{"index":{"_id":92}}
+{"name": "product27", "stock": 31, "barode_id": "0", "productID": "000010028", "catagory": "googd_product27", "available": false, "description": "test_product27", "price": 61}
+{"index":{"_id":93}}
+{"name": "product28", "stock": 32, "barode_id": "0", "productID": "000010029", "catagory": "googd_product28", "available": false, "description": "test_product28", "price": 62}
+{"index":{"_id":94}}
+{"name": "product29", "stock": 33, "barode_id": "0", "productID": "000010030", "catagory": "googd_product29", "available": false, "description": "test_product29", "price": 63}
+{"index":{"_id":95}}
+{"name": "product30", "stock": 34, "barode_id": "0", "productID": "000010031", "catagory": "googd_product30", "available": false, "description": "test_product30", "price": 64}
+{"index":{"_id":96}}
+{"name": "product31", "stock": 35, "barode_id": "0", "productID": "000010032", "catagory": "googd_product31", "available": false, "description": "test_product31", "price": 65}

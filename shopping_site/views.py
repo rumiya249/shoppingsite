@@ -6,10 +6,18 @@ from django.shortcuts import render,render_to_response,HttpResponseRedirect,Http
 
 from django.views.generic import TemplateView,FormView,View
 
+<<<<<<< HEAD
 from .forms import CreateProductForm,BulkUploadForm,SheetAPIForm
 from .models import Product,FileDataModel, FacebookData, TwitterData
 import csv
 from .api import ProductApi, FacebookApi, TwitterApi
+=======
+from .forms import CreateProductForm,BulkUploadForm,SheetAPIForm,BarcodeUploadForm,SignupForm,LoginForm
+from .models import Product,FileDataModel,ImageDataModel,UserProfileModel
+import csv
+import json
+from .api import ProductApi
+>>>>>>> bc65a24b008b8b8463de5502abfcdf87bb321000
 
 
 
@@ -34,14 +42,21 @@ try:
 except ImportError:
     flags = None
 
+import barcode
+from pyzbar.pyzbar import decode
+from PIL import Image
+from django.core.files.storage import FileSystemStorage
+
 # If modifying these scopes, delete your previously saved credentials
 # at ~/.credentials/sheets.googleapis.com-python-quickstart.json
 SCOPES = 'https://www.googleapis.com/auth/spreadsheets.readonly'
 CLIENT_SECRET_FILE = 'client_secret.json'
 APPLICATION_NAME = 'Google Sheets API Python Quickstart'
+
 class AddProductView(FormView):
 	template_name='add_product.html'
 	form_class = CreateProductForm
+	
 
 
 	def get(self,request,*args,**kwargs):
@@ -58,25 +73,28 @@ class AddProductView(FormView):
 		description=data.get('description')
 		stock=data.get('stock')
 		category=data.get('category')
+		productID=data.get('productID')
 		form=self.form_class(data)
 		if form.is_valid():
-			prod=ProductApi().create(name,price,description,stock,category)
+			prod=ProductApi().create(name,price,description,stock,category,productID)
 			return HttpResponseRedirect('/shop/')
 
 class DisplayProducts(TemplateView):
 	template_name='display_products.html'
 	form_class= BulkUploadForm
 	form_class2=SheetAPIForm
-
+	image_form=BarcodeUploadForm
 
 	def get(self,request,*args,**kwargs):
 		prod_obj=Product.objects.all()
 		form=self.form_class()
 		form_sheet=self.form_class2()
+		img_code=self.image_form()
 		context={}
 		context['prod']=prod_obj
 		context['form2']=form
 		context['sheetform'] = form_sheet
+		context['form_img']=img_code
 		return self.render_to_response(context)
 
 
@@ -134,7 +152,6 @@ class EditProductView(FormView):
 			return HttpResponseRedirect('/shop')
 
 
-
 class DownloadDataView(View):
 	def get(self,request,*args,**kwargs):
 		response = HttpResponse(content_type='text/csv')
@@ -168,8 +185,9 @@ class BulkUpload(TemplateView):
                csv_obj=csv.reader(f) 
                for i in csv_obj:
                    print (i)
-                   prod=ProductApi().create(i[0],i[2],i[1],i[3],i[4])
+                   prod=ProductApi().create(i[0],i[2],i[1],i[3],i[4],i[5])
                return HttpResponseRedirect('/shop')
+
         else:
         	file1.delete()
         	return HttpResponseRedirect('/shop')
@@ -214,20 +232,212 @@ class GoogleSheetUpload(TemplateView):
 			print(result,"dskfhlksdjfklsdjlkfjskldjfklsdjf")
 			values = result.get('values', [])
 			print(values,"values")
-			if not values:
+			if not values:                                                                                                                                               
 				print('No data found.')
 			else:
 				print('Name, Major:')
 				for row in values:
-					print('%s, %s ,%s, %s,%s' % (row[0], row[1],row[2],row[3],row[4]))
+					print('%s, %s ,%s, %s,%s' % (row[0], row[1],row[2],row[3],row[4],row[5]))
 					name=row[0]
 					price=row[2]
 					description=row[1]
 					stock=row[3]
 					category=row[4]
-					prod=ProductApi().create(name,price,description,stock,category)
+					product_id=row[5]
+					prod=ProductApi().create(name,price,description,stock,category,productID)
 
 				return HttpResponseRedirect('/shop')
+class GenerateBarCodeView(TemplateView):
+
+	def post(self,request,*args,**kwargs):
+		print(kwargs,"dsfdsfdfdsf")
+		product_id=kwargs.get('product_id')
+		prod_obj=ProductApi().get(id=product_id)
+		ean = barcode.get('ean13',str(prod_obj.productID))
+		print(ean,"aaaaa")
+		filename = ean.save('/home/rumiya/workspace/mysite/data_files/svg/'+str(prod_obj.name)+str(prod_obj.productID))
+		print(filename,dir(filename))
+		prod_obj.Barcode_Path=filename
+		prod_obj.barode_id=ean
+		prod_obj.save() 
+		return HttpResponseRedirect('/shop')
+
+class UploadBarcode(TemplateView):
+	print("inside ")
+	image_form=BarcodeUploadForm
+	def post(self,request,*args,**kwargs):
+		data=request.POST.copy()
+		print("data1",data)
+		form=self.image_form(data,request.FILES)
+		if form.is_valid():
+			img_model=ImageDataModel()
+			img_model.path=request.FILES.get('image_name')
+			print("path3",img_model.path)
+			img_model.save()
+			file_url=img_model.path.url
+			print("path",file_url)
+			decode(Image.open('/home/rumiya/workspace/mysite/data_files/svg/'))
+		return HttpResponseRedirect('/shop')
+
+class SignupView(FormView):
+    template_name='signup.html'
+    form_class = SignupForm	
+
+    def get(self,request,*args,**kwargs):
+        context={}
+        form=self.form_class()
+        context['form'] = form
+        return self.render_to_response(context)	
+    def post(self,request,*args,**kwargs):
+    	data=request.POST.copy()
+    	print (data,"jghjghjghjghjghjg")
+    	form=self.form_class(data)
+    	if form.is_valid():
+    		usr_obj = UserProfileModel()
+    		usr_obj.user_types = data.get('user_type')
+    		usr_obj.first_name = data.get('first_name')
+    		usr_obj.last_name = data.get('last_name')
+    		usr_obj.email = data.get('email')
+    		usr_obj.username = data.get('email')
+    		usr_obj.set_password(data.get('password'))
+    		usr_obj.save()
+    	return HttpResponseRedirect('/shop/signup')
+
+class LoginView(FormView):
+	template_name = 'login.html'
+	form_class = LoginForm
+
+
+	def get(self,request,*args,**kwargs):
+		context={}
+		form=self.form_class()
+		context['form'] = form
+		return self.render_to_response(context)
+
+	def post(self,request,*args,**kwargs):
+		data=request.POST.copy()
+		print(data)
+		email=data.get('email')
+		usr_obj = UserProfileModel.objects.get(email=email)
+		if usr_obj:
+			login(usr_obj,request)
+
+
+
+			
+# class UploadBarcode(TemplateView):
+# 	def post(self,request,*args,**kwargs):
+# 		uploadedFile=handle_uploaded_file(request.FILES['image_name'])
+# 		return HttpResponseRedirect('/shop')
+
+		
+# 		def handle_uploaded_file(filename):
+# 			if not os.path.exists('upload/'):
+# 				os.mkdir('upload/')
+# 			filePath = 'upload/' + filename
+# 			print("file path",filepath)
+# 			return filePath
+ 
+    	# with open(filePath, 'wb+') as destination:
+     #    	for chunk in file.chunks():
+     #    	    destination.write(chunk)
+
+class ProductES(View):
+    def get(self,request,*args,**kwargs):
+        # print (request.GET)
+        product_obj=Product.objects.all()
+        with open('test.json','w') as f:
+	        prod_dictionary={}
+	        lis_data=[]
+	        for i in product_obj:
+	            new_dictionary={}
+	            new_dictionary["name"]=i.name
+	            new_dictionary['price']=int(i.price)
+	            # new_dictionary['pub_date']=i.pub_date
+	            new_dictionary['description']=i.description
+	            new_dictionary['stock']=i.stock
+	            new_dictionary['available']=i.available
+	            new_dictionary['catagory']=i.catagory
+	            new_dictionary['productID']=i.productID
+	            # new_dictionary['Barcode_Path']=i.Barcode_Path
+	            new_dictionary['barode_id']=i.barode_id
+	            f.write('{"index":{"_id":%s}}'%i.id)
+	            f.write('\n')
+	            f.write(json.dumps(new_dictionary))
+	            f.write('\n')
+	            lis_data.append(new_dictionary)
+        	prod_dictionary={'data':lis_data}
+        	s=json.dumps(prod_dictionary)
+        return HttpResponse(s)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+ 
+			
+		
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 class GetFacebookPageData(TemplateView):
 	#token = 'EAACEdEose0cBALfPIkYEzdGfW25zrU9bxADYbmjLPaPQjZAojr2eqKCDFSMtnTTsVHy0DHPE4oxUZBtNNOqZBKGTQSS6jpFg48EeFpVkg2QyUiLmqiocpcjAuDDDQDVXbe93mj6MDhO3yoscrewWwZA3dhHJe9NmCwRh83NIIubq3jx9ucWUU1ZAyycDhdWQwYrvZBNvLlZBAZDZD'

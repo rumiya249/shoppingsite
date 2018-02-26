@@ -7,11 +7,7 @@
 <!-- <link rel="stylesheet" href="{%static 'css/bootstrap.css'%}"> -->
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 
-<script
-  src="https://code.jquery.com/jquery-3.3.1.min.js"
-  integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
-  crossorigin="anonymous"></script>
-  <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
 <!-- <script type="text/javascript" src="{% static 'js/bootstrap.js'%}"></script> -->
@@ -39,6 +35,7 @@
     <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
       <a class="dropdown-item" href="#" data-toggle="modal" data-target="#exampleModal">CSV Upload</a>
       <a class="dropdown-item" href="#" data-toggle="modal" data-target="#sheetModal">Google Sheet Upload</a>
+      <a class="dropdown-item" href="#" data-toggle="modal" data-target="#imageModal">Upload Barcode</a>
     </div>
   </div>
 </div>
@@ -49,17 +46,18 @@
 	<th>Name</th>
 	<th>Price</th>
 	<th>Stock</th>
-	<!-- <th>Availability</th> -->
+	<th>ProductID</th>
 	<th>Description</th>
 	<th>Delete</th>
 	<th>Edit</th>
+  <th>Generate BarCode</th>
 {% for i in prod %}
 <tr>
 	
 	<td>{{i.name}}</td>
 	<td>{{i.price}}</td>
 	<td>{{i.stock}}</td>
-	<!-- <td>{{i.available}}</td> -->
+	<td>{{i.productID}}</td>
 	<td>{{i.description}}</td>
 
 <form action="{% url 'delete_product' i.id%}" method='POST'>
@@ -68,7 +66,12 @@
 <input type="hidden" name="dele_id" value="{{i.id}}">
 	</form>
 <td><a href="{%url 'edit_product' i.id%}" class="btn btn-secondary" >Edit</a></td>
-</tr>
+<form action="{% url 'generate_product' i.id%}" method='POST'>
+  {%csrf_token%}
+<td><input type="submit" name="delete" value="Generate Barcode "class="btn btn-secondary"></td>
+<input type="hidden" name="dele_id" value="{{i.id}}">                   
+  </form> 
+</tr>        
 
 {% endfor %}
 
@@ -131,5 +134,38 @@
     </div>
   </div>
 </div>
+
+
+
+<div class="modal fade" id="imageModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Upload Barcode </h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form action="{%url 'barcode' %}" method="POST" enctype="multipart/form-data">
+  {% csrf_token %}
+{{ form_img }}
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+        <input type="submit" value="Submit" class= 'btn btn-primary'>
+
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
 </body>
 </html>
