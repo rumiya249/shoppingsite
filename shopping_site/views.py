@@ -7,9 +7,9 @@ from django.shortcuts import render,render_to_response,HttpResponseRedirect,Http
 from django.views.generic import TemplateView,FormView,View
 
 from .forms import CreateProductForm,BulkUploadForm,SheetAPIForm
-from .models import Product,FileDataModel
+from .models import Product,FileDataModel, FacebookData, TwitterData
 import csv
-from .api import ProductApi
+from .api import ProductApi, FacebookApi, TwitterApi
 
 
 
@@ -20,6 +20,13 @@ from apiclient import discovery
 from oauth2client import client
 from oauth2client import tools
 from oauth2client.file import Storage
+
+import requests
+
+import tweepy, json
+from tweepy import OAuthHandler
+from urllib.request import urlopen
+from instagram.client import InstagramAPI
 
 try:
     import argparse
@@ -222,14 +229,148 @@ class GoogleSheetUpload(TemplateView):
 
 				return HttpResponseRedirect('/shop')
 
+class GetFacebookPageData(TemplateView):
+	#token = 'EAACEdEose0cBALfPIkYEzdGfW25zrU9bxADYbmjLPaPQjZAojr2eqKCDFSMtnTTsVHy0DHPE4oxUZBtNNOqZBKGTQSS6jpFg48EeFpVkg2QyUiLmqiocpcjAuDDDQDVXbe93mj6MDhO3yoscrewWwZA3dhHJe9NmCwRh83NIIubq3jx9ucWUU1ZAyycDhdWQwYrvZBNvLlZBAZDZD'
+
+	#page = 'https://graph.facebook.com/v2.12/apibyheena?fields=posts{message,likes,comments}&access_token='+token
+	# def get(self,request,*args,**kwargs):
+	# page2 = 'https://graph.facebook.com/v2.12/me?access_token='+token
+	
+	template_name='social_media_data.html'
+
+	def get(self, url, params=None, **kwargs):
+		
+		token = 'EAACEdEose0cBAEpTNiYG681XwoQ0tChDlyo5fhZCVPdcXh5kxUKYhMgiOETFDlBNk82PYywVSYRAtzR6igbHz3RwZCLI1b6s3xCmlKj1o0nuihO5vKpJc5GClsI7NVzMD427imBtIuniGApARxrVJRsz6jZBsN0IWaZBEMkN8AMkxRr5hpzlcPR9b8ItX60k9LBdsoZBN6gZDZD'
+
+		page = 'https://graph.facebook.com/v2.12/apibyheena?fields=posts{message,likes,comments}&access_token='+token
+
+		page_details = requests.get(page)
+		apiResponse = page_details.text		
+		titles = page_details.json()
+		#print("single value@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@:",titles)
+		posts = titles['posts']
+		print("posts:!!!!!!!!!!!!!!!!!!!!!!!!!!",posts)
+		data = posts['data']
+		print("data *************:",data)
+		print("#########################################")
+		
+		for i,r in enumerate(data):
+			#print "state=%s" %r['address'][1]
+
+			message = r["message"]
+			likes = r["likes"]
+
+			print("message=",message)
+			print("likes=",likes)
+			comments = r['comments']			
+			no_of_likes = len(likes['data']) 
+			print("number of likes", no_of_likes)
+			length = len(comments['data'])
+			
+			for j in range(0,length):
+				print("comment:",comments['data'][j]['message'])				
+				comment = comments['data'][j]['message']
+				print("commenttype:",type(comments))				
+				comment_from = comments['data'][j]['from']['name']
+				print("comment_from:", comment_from)
+				FacebookApi().create_status(message, comment, comment_from, no_of_likes)
+			data_obj= FacebookData.objects.all()
+			context={}
+			context['data'] = data_obj
+		return self.render_to_response(context)
+					
+			#print("l:",likes_list['data'][0]['name'])
+			#print("l2:",likes_list['data'][1]['name'])
+			# for i, r in enumerate(likes_list):
+			#     print("likes_lists:", r['data'])
+
+class GetTwitterData(TemplateView):
+	template_name='twitter_data.html'
+	def get(self, url, params=None, **kwargs):
+		consumer_key = '5UOgWCCYSHwFMI5UoRB0YzZGD'
+		consumer_secret = 'PR9WgJSZjgGXy3d1Cx6Gfy0SETZpKXnJUOwu39hKEJABJeJRmV'
+		access_token = '4803005483-QbGO0tkMnQStD0ZcT2APEPoazHCSXPlGkVOWNvW'
+		access_secret = 'cDtlPPrHedPkwEBpb9FXesXeoJq2V9KCNFX3oVRkG8tJQ'
+		auth = OAuthHandler(consumer_key, consumer_secret)
+		auth.set_access_token(access_token, access_secret)
+		api = tweepy.API(auth)
+		for status in tweepy.Cursor(api.home_timeline).items(5):
+			# status_id = json.dumps(status._json['id'])
+			# # status_id = status._json['id']
+			# print("status id",status_id)
+			# status = json.dumps(status._json['text'])
+			# print("status :",status)
+			# print("posted by###############:",status._json['user']['screen_name'])
+			replied_to_message_id = json.dumps(status._json['in_reply_to_status_id'])
+			print("replied_to_status_id", replied_to_message_id)
+			#print("replied_type", type(replied_to_message_id))
+			replied_to_user = json.dumps(status._json['in_reply_to_screen_name'])
+			print("replied_to:", replied_to_user)
+
+			likes = json.dumps(status._json['favorite_count'])
+			print("likes:",likes)
+			print("likes-type:",type(likes))
+			posted_by_user = json.dumps(status._json['user']['screen_name'])
+			print("posted by", posted_by_user)
+			id_message = json.dumps(status._json['id'])
+			print("status id",id_message)
+			message = status._json['text']
+			print("status :",message)
+			TwitterApi().create_status(id_message, message, likes, posted_by_user, replied_to_user, replied_to_message_id)
+		data_obj= TwitterData.objects.all()
+		context={}
+		context['data'] = data_obj
+		return self.render_to_response(context)
+		#return HttpResponseRedirect('/shop')
+
+			
+			# replied_to = json.dumps(status._json['in_reply_to_screen_name'])
+			# print("replied_to:", replied_to)
+			
+
+			# # TwitterApi().create_status(status._json['id'], status._json['text'], status._json['favorite_count'], status._json['user']['screen_name'], status._json['in_reply_to_screen_name'],status._json['in_reply_to_status_id'])
+
+			# # response= status._json
+			# # apiResponse = response
+			# # json_data = json.dumps(apiResponse)
+			# # #print("res",json_data)
+			# # # #val = json.loads('status._json')
+
+			# # status_id = status._json['id']
+			# # print("status id:",status_id)
+			# # status = status._json['text']
+			# # print("status :",status)
+			# #likes = status._json['favorite_count']
+			# #print("likes:",status._json['favorite_count'])
+			# #posted_by = status._json['user']['screen_name']
+			# # replied_to = status._json['in_reply_to_screen_name']
+			# # replied_to_status_id = status._json['in_reply_to_status_id']
+			# # TwitterApi().create_status(status_id, status, likes, posted_by, replied_to, replied_to_status_id)
+			# print("status id###############:",status._json['id'])
+			# print("status ###############:",status._json['text'])
+			# print("likes ###############:",status._json['favorite_count'])
+			# print("posted by###############:",status._json['user']['screen_name'])
+			# print ("replied to:#########",status._json['in_reply_to_screen_name'])
+			# print ("replied to status id:#########",status._json['in_reply_to_status_id'])
+		
+class GetInstagramData(TemplateView):
+	def get(self, url, params=None, **kwargs):
+		testurl='https://api.instagram.com/v1/users/self/media/recent/?access_token=2351144425.10312b6.4e0b3d65c1774ee8aeb807e9ff77280a'
+		response = urlopen(testurl)
+		apiResponse = response.read()
+		json_data = json.dumps(apiResponse)
+		print("insta json:",json_data)
+		return HttpResponseRedirect('/shop')
+	# def get(self, url, params=None, **kwargs):
+	# 	access_token = "2351144425.10312b6.4e0b3d65c1774ee8aeb807e9ff77280a"
+	# 	client_secret = "114973dfa6e146788a42c4518ac697b4"
+	# 	api = InstagramAPI(access_token=access_token, client_secret=client_secret)
+	# 	recent_media, next_ = api.user_recent_media(user_id="2351144425", count=10)
+	# 	print("recentmedia:",recent_media)
+	# 	# for media in recent_media:
+	# 	# 	print("media:",media.caption.text)
+	# 	return HttpResponseRedirect('/shop')
 
 
 
-
-
-
-
-
-
-
-
+	
