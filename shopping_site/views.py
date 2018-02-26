@@ -11,6 +11,10 @@ from .models import Product,FileDataModel,ImageDataModel,UserProfileModel
 import csv
 import json
 from .api import ProductApi
+from urllib.parse import urlencode
+from copy import deepcopy
+
+from django.db.models import Count
 
 
 
@@ -32,12 +36,18 @@ import barcode
 from pyzbar.pyzbar import decode
 from PIL import Image
 from django.core.files.storage import FileSystemStorage
-
+from django.conf import settings
+from django.contrib.auth import authenticate,login
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
 # If modifying these scopes, delete your previously saved credentials
 # at ~/.credentials/sheets.googleapis.com-python-quickstart.json
 SCOPES = 'https://www.googleapis.com/auth/spreadsheets.readonly'
 CLIENT_SECRET_FILE = 'client_secret.json'
 APPLICATION_NAME = 'Google Sheets API Python Quickstart'
+
+client = settings.ES_CLIENT
+
 
 class AddProductView(FormView):
 	template_name='add_product.html'
@@ -70,6 +80,7 @@ class DisplayProducts(TemplateView):
 	form_class= BulkUploadForm
 	form_class2=SheetAPIForm
 	image_form=BarcodeUploadForm
+
 
 	def get(self,request,*args,**kwargs):
 		prod_obj=Product.objects.all()
@@ -109,7 +120,6 @@ class DeleteProducts(FormView):
 class EditProductView(FormView):
 	form_class=CreateProductForm
 	template_name='edit_products.html'
-
 
 	def get(self,request,*args,**kwargs):
 		context={}
@@ -213,7 +223,7 @@ class GoogleSheetUpload(TemplateView):
 			discoveryUrl = ('https://sheets.googleapis.com/$discovery/rest?version=v4')
 			service = discovery.build('sheets', 'v4', http=http,discoveryServiceUrl=discoveryUrl)
 			spreadsheetId = sheet_id
-			rangeName = 'Sheet1!A1:E9'
+			rangeName = 'Sheet1!A1:F9'
 			result = service.spreadsheets().values().get(spreadsheetId=spreadsheetId, range=rangeName).execute()
 			print(result,"dskfhlksdjfklsdjlkfjskldjfklsdjf")
 			values = result.get('values', [])
@@ -223,15 +233,15 @@ class GoogleSheetUpload(TemplateView):
 			else:
 				print('Name, Major:')
 				for row in values:
-					print('%s, %s ,%s, %s,%s' % (row[0], row[1],row[2],row[3],row[4],row[5]))
+					print('%s, %s ,%s, %s,%s,%s' % (row[0], row[1],row[2],row[3],row[4],row[5]))
 					name=row[0]
 					price=row[2]
 					description=row[1]
 					stock=row[3]
 					category=row[4]
-					product_id=row[5]
+					productID=row[5]
 					prod=ProductApi().create(name,price,description,stock,category,productID)
-
+				messages.success(request,'Uploaded Gogole Sheet successfully',extra_tags='alert-success')
 				return HttpResponseRedirect('/shop')
 class GenerateBarCodeView(TemplateView):
 
@@ -304,29 +314,14 @@ class LoginView(FormView):
 		data=request.POST.copy()
 		print(data)
 		email=data.get('email')
-		usr_obj = UserProfileModel.objects.get(email=email)
-		if usr_obj:
-			login(usr_obj,request)
+		password = data.get('password')
+		user = authenticate(username=email, password=password)
+		if user:
+			login(request, user)
+			return HttpResponseRedirect('/shop/products')
+		else:
+			return HttpResponseRedirect('/shop/login')
 
-
-
-			
-# class UploadBarcode(TemplateView):
-# 	def post(self,request,*args,**kwargs):
-# 		uploadedFile=handle_uploaded_file(request.FILES['image_name'])
-# 		return HttpResponseRedirect('/shop')
-
-		
-# 		def handle_uploaded_file(filename):
-# 			if not os.path.exists('upload/'):
-# 				os.mkdir('upload/')
-# 			filePath = 'upload/' + filename
-# 			print("file path",filepath)
-# 			return filePath
- 
-    	# with open(filePath, 'wb+') as destination:
-     #    	for chunk in file.chunks():
-     #    	    destination.write(chunk)
 
 class ProductES(View):
     def get(self,request,*args,**kwargs):
@@ -355,6 +350,114 @@ class ProductES(View):
         	prod_dictionary={'data':lis_data}
         	s=json.dumps(prod_dictionary)
         return HttpResponse(s)
+
+class HomePageView(TemplateView):
+
+    template_name = "index.html"
+
+    def get_context_data(self, **kwargs):
+        body = {
+        "aggs": {
+		    "group_by_price": {
+		      "range": {
+		        "field": "price",
+		        "ranges": [
+		          {
+		            "from": 20,
+		            "to": 30
+		          },
+		          {
+		            "from": 30,
+		            "to": 40
+		          },
+		          {
+		            "from": 40,
+		            "to": 50
+		          },
+		          {
+		            "from": 50,
+		            "to": 60
+		          },
+		        ]
+		      },
+            }
+            }
+            }
+
+
+        
+        search_result = client.search(index='product', doc_type='product', body=body)
+        print(search_result)
+
+        context = super(HomePageView, self).get_context_data(**kwargs)
+        list_new=[]
+        for c in search_result['hits']['hits']:
+        	new_list={}
+        	new_list=c['_source']
+        	new_list['pk']=c['_id']
+        	list_new.append(new_list)
+
+        context['hits']=list_new
+        context['aggregations'] = search_result['aggregations']
+        print(context['aggregations'])
+        return context
+   
+class AutoCompleteView(TemplateView):
+	template_name='index.html'
+
+
+	def get(self,request,*args,**kwargs):
+		query = request.GET.get('term', '')
+		print(query,"dnmsfbsdjkfjksdhfkjsdhfjhdsjfkhsdkjhfkjsdhfkjdshkf")
+		body={
+		"suggest": {
+     	"my-suggest-1" : {
+	      "text" : query,
+	      "term" : {
+        	"field" : 'name'
+      }
+    },
+		}
+		}
+		resp = client.search(index='product',body=body)
+		print (resp,'sdfjhsdjkhfjshdkfjsdf')
+		print(resp)
+		new_list=[]
+		for i in resp['hits']['hits']:
+			new_dict={}
+			new_dict['id']=i['_id']
+			new_dict['value'] = i['_source']['name']
+			new_list.append(new_dict)
+		data = json.dumps(new_list)
+		print(data)
+		mimetype = 'application/json'
+		return HttpResponse(data, mimetype)
+
+
+class ProductDetailView(TemplateView):
+	template_name='product-details.html'
+
+
+	def get(self,request,*args,**kwargs):
+		context={}
+		product_id = request.GET['product_id']	
+		product = Product.objects.get(id=product_id)
+		context['product'] = product
+		return self.render_to_response(context)
+
+
+		
+
+
+
+
+
+
+
+
+
+     
+
 
 
 

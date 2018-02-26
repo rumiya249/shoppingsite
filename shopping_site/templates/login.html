@@ -1,5 +1,44 @@
+{%extends 'base.html'%}
+	<div class="navbar navbar-light" style="background-color:#333;"> 
+		<span class="navbar-text">
+    <h3 class="abc" style="margin-left: 56px;
+    color: lightcyan;"> Welcome to Shopping Site.Login To continue 
+  </span>
+</h3>
+</div>
+{% block container%}
+	<div class="container">
+<h2 class= "a11" style="color:darkslategrey">Login To Shop Products</h3>
 <form action="{% url 'login' %}" method="POST">
 	{% csrf_token %}
-{{form.as_p}}
-<input type="submit" value="Submit" class= 'btn btn-primary'>
+<label for="id_email">Email address</label>
+<div class="form-group">{{form.email}}</div>
+<label for="id_password">Password</label>
+<div class="form-group">{{form.password}}</div>
+<ul class="list-group">	
+<!-- <li class="list-group-item disabled">{{form.as_p}}</li> -->
+<li class="list-group-item disabled"><input type="submit" value="Submit" class= 'btn btn-primary'></li>
+
+</ul>
+
+</div>
 </form>
+{% endblock %}
+
+
+
+<!-- <ul class="list-group">
+  <li class="list-group-item disabled">Cras justo odio</li>
+  <li class="list-group-item">Dapibus ac facilisis in</li>
+  <li class="list-group-item">Morbi leo risus</li>
+  <li class="list-group-item">Porta ac consectetur ac</li>
+  <li class="list-group-item">Vestibulum at eros</li>
+</ul
+
+ -->
+
+
+
+
+
+

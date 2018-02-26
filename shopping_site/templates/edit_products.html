@@ -1,6 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+	<!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous"> 
+</head>
+<body>
+	<div class="navbar navbar-light" style="background-color:darkblue;"> 
+		<span class="navbar-text">
+    <h3 class="abc" style="margin-left: 56px;
+    color: lightcyan;">Choose to Edit the Products
+  </span>
+</h3>
+</div>
+<div class="container">
+	<h2 class= "a11" style="color:darkslategrey">Edit Product</h3>
+
 <form action="{%url 'edit_product' id %}" method="POST">
+	<div class='form-group'>
 	{%csrf_token%}
-{{form.as_p}}
-<input type="submit" name="edit" value="Edit">
-<input type="hidden" name="edit_ids" value={{id}}>
+	<ul class="list-group">
+<li class="list-group-item disabled">{{form.as_p}}</li>
+<li class="list-group-item disabled"><input type="submit" name="edit" value="Edit" class= 'btn btn-primary'></li>
+<li class="list-group-item disabled"><input type="hidden" name="edit_ids" value={{id}}></li>
+</ul>
+</div>
 </form>
+
+ 
